@@ -1,7 +1,6 @@
 #Import packages, import and reshape data, and start and check some values
 import numpy as np
 import h5py
-import time
 
 layer_dims = [12288, 20, 7, 5, 1]
 L = len(layer_dims)
