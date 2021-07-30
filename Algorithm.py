@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 layer_dims = [12288, 20, 7, 5, 1]
 L = len(layer_dims)
 learning_rate = 0.0075
-epochs = 500
+epochs = 1000
 
 train_dataset = h5py.File('datasets/train_catvnoncat.h5', "r")
 train_x = np.array(train_dataset["train_set_x"][:])
@@ -220,7 +220,13 @@ for i in range(epochs):
     if i % 100 == 0 or i == epochs - 1:
         print("Cost after iteration {}: {}".format(i, cost_j))
 
-plt.plot(list(range(epochs)), cost_list_j, '-r')
-plt.show()
-plt.plot(list(range(epochs)), cost_list_n, '-r')
+plt.figure()
+plt.subplot(211)
+plt.plot(list(range(epochs)), cost_list_j, color='red')
+plt.ylim(bottom=0.1, top=0.7)
+plt.xlim(left=0, right=epochs)
+plt.subplot(212)
+plt.plot(list(range(epochs)), cost_list_n, color='blue')
+plt.ylim(bottom=0.1, top=0.7)
+plt.xlim(left=0, right=epochs)
 plt.show()
