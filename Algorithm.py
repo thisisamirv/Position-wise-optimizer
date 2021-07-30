@@ -117,17 +117,17 @@ for i in range(0, 1000):
         cost = np.squeeze(cost)
         print("Cost after iteration {}: {}".format(i, cost))
 
-Z1j = np.dot(W1j, X) + b1j
-A1j = np.maximum(0, Z1j)
-Z2j = np.dot(W2j, A1j) + b2j
-A2j = np.maximum(0, Z2j)
-Z3j = np.dot(W3j, A2j) + b3j
-A3j = np.maximum(0, Z3j)
-Z4j = np.dot(W4j, A3j) + b4j
-A4j = 1 / (1 + np.exp(-Z4j))
-
 # Optimized Network
 for i in range(0, 1000):
+    Z1j = np.dot(W1j, X) + b1j
+    A1j = np.maximum(0, Z1j)
+    Z2j = np.dot(W2j, A1j) + b2j
+    A2j = np.maximum(0, Z2j)
+    Z3j = np.dot(W3j, A2j) + b3j
+    A3j = np.maximum(0, Z3j)
+    Z4j = np.dot(W4j, A3j) + b4j
+    A4j = 1 / (1 + np.exp(-Z4j))
+
     dZ4j = A4j - Y
     dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
     db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
@@ -205,14 +205,6 @@ for i in range(0, 1000):
     b3j = b3j - learning_rate * db3j
     W4j = W4j - learning_rate * dW4j
     b4j = b4j - learning_rate * db4j
-    Z1j = np.dot(W1j, X) + b1j
-    A1j = np.maximum(0, Z1j)
-    Z2j = np.dot(W2j, A1j) + b2j
-    A2j = np.maximum(0, Z2j)
-    Z3j = np.dot(W3j, A2j) + b3j
-    A3j = np.maximum(0, Z3j)
-    Z4j = np.dot(W4j, A3j) + b4j
-    A4j = 1 / (1 + np.exp(-Z4j))
 
     if i % 100 == 0 or i == 1000 - 1:
         cost = (-1 / m_train_y) * np.sum(np.multiply(Y, np.log(A4j)) + np.multiply(1 - Y, np.log(1 - A4j)))
