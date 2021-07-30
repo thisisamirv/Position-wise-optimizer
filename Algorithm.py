@@ -54,7 +54,7 @@ W4 = np.random.randn(layer_dims[4], layer_dims[3]) / np.sqrt(layer_dims[3])
 b4 = np.zeros((layer_dims[4], 1))
 
 # Network
-for i in range(0, 10000):
+for i in range(0, 2000):
     Z1 = np.dot(W1, X) + b1
     A1 = np.maximum(0, Z1)
     Z2 = np.dot(W2, A1) + b2
@@ -69,9 +69,8 @@ for i in range(0, 10000):
     db4 = np.sum(dZ4, axis=1, keepdims=True) * (1. / A3.shape[1])
 
     dA3 = np.dot(W4.T, dZ4)
-    s3 = 1 / (1 + np.exp(-Z3))
-    sb3 = s3 * (s3 - 1)
-    dZ3 = dA3 * sb3
+    dZ3 = np.array(dA3, copy=True)
+    dZ3[Z3 <= 0] = 0
     dW3 = np.dot(dZ3, A2.T) * (1. / A2.shape[1])
     db3 = np.sum(dZ3, axis=1, keepdims=True) * (1. / A2.shape[1])
 
@@ -95,7 +94,7 @@ for i in range(0, 10000):
     b3 = b3 - learning_rate * db3
     W4 = W4 - learning_rate * dW4
     b4 = b4 - learning_rate * db4
-    if i % 100 == 0 or i == 10000 - 1:
+    if i % 100 == 0 or i == 2000 - 1:
         cost = (-1 / m_train_y) * np.sum(np.multiply(Y, np.log(A4)) + np.multiply(1 - Y, np.log(1 - A4)))
         cost = np.squeeze(cost)
         print("Cost after iteration {}: {}".format(i, cost))
