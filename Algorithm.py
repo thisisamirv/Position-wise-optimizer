@@ -1,10 +1,12 @@
 # Import packages, import and reshape data, and start and check some values
 import numpy as np
 import h5py
+import matplotlib.pyplot as plt
 
 layer_dims = [12288, 20, 7, 5, 1]
 L = len(layer_dims)
 learning_rate = 0.0075
+epochs = 500
 
 train_dataset = h5py.File('datasets/train_catvnoncat.h5', "r")
 train_x = np.array(train_dataset["train_set_x"][:])
@@ -71,8 +73,9 @@ b2j = np.copy(b2)
 b3j = np.copy(b3)
 b4j = np.copy(b4)
 
+cost_list_n = []
 # Normal Network
-for i in range(0, 1000):
+for i in range(epochs):
     Z1n = np.dot(W1n, X) + b1n
     A1n = np.maximum(0, Z1n)
     Z2n = np.dot(W2n, A1n) + b2n
@@ -112,13 +115,17 @@ for i in range(0, 1000):
     b3n = b3n - learning_rate * db3n
     W4n = W4n - learning_rate * dW4n
     b4n = b4n - learning_rate * db4n
-    if i % 100 == 0 or i == 1000 - 1:
-        cost = (-1 / m_train_y) * np.sum(np.multiply(Y, np.log(A4n)) + np.multiply(1 - Y, np.log(1 - A4n)))
-        cost = np.squeeze(cost)
-        print("Cost after iteration {}: {}".format(i, cost))
 
+    cost_n = (-1 / m_train_y) * np.sum(np.multiply(Y, np.log(A4n)) + np.multiply(1 - Y, np.log(1 - A4n)))
+    cost_n = np.squeeze(cost_n)
+    cost_list_n.append(cost_n)
+
+    if i % 100 == 0 or i == epochs - 1:
+        print("Cost after iteration {}: {}".format(i, cost_n))
+
+cost_list_j = []
 # Optimized Network
-for i in range(0, 1000):
+for i in range(epochs):
     Z1j = np.dot(W1j, X) + b1j
     A1j = np.maximum(0, Z1j)
     Z2j = np.dot(W2j, A1j) + b2j
@@ -206,7 +213,14 @@ for i in range(0, 1000):
     W4j = W4j - learning_rate * dW4j
     b4j = b4j - learning_rate * db4j
 
-    if i % 100 == 0 or i == 1000 - 1:
-        cost = (-1 / m_train_y) * np.sum(np.multiply(Y, np.log(A4j)) + np.multiply(1 - Y, np.log(1 - A4j)))
-        cost = np.squeeze(cost)
-        print("Cost after iteration {}: {}".format(i, cost))
+    cost_j = (-1 / m_train_y) * np.sum(np.multiply(Y, np.log(A4j)) + np.multiply(1 - Y, np.log(1 - A4j)))
+    cost_j = np.squeeze(cost_j)
+    cost_list_j.append(cost_j)
+
+    if i % 100 == 0 or i == epochs - 1:
+        print("Cost after iteration {}: {}".format(i, cost_j))
+
+plt.plot(list(range(epochs)), cost_list_j, '-r')
+plt.show()
+plt.plot(list(range(epochs)), cost_list_n, '-r')
+plt.show()
