@@ -2,11 +2,12 @@
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
+import time
 
 layer_dims = [12288, 20, 7, 5, 1]
 L = len(layer_dims)
 learning_rate = 0.0075
-epochs = 1000
+epochs = 1500
 
 train_dataset = h5py.File('datasets/train_catvnoncat.h5', "r")
 train_x = np.array(train_dataset["train_set_x"][:])
@@ -74,7 +75,11 @@ b3j = np.copy(b3)
 b4j = np.copy(b4)
 
 cost_list_n = []
-# Normal Network
+cost_list_j = []
+
+# Conventional Backprop
+t0 = time.clock()
+
 for i in range(epochs):
     Z1n = np.dot(W1n, X) + b1n
     A1n = np.maximum(0, Z1n)
@@ -123,8 +128,19 @@ for i in range(epochs):
     if i % 100 == 0 or i == epochs - 1:
         print("Cost after iteration {}: {}".format(i, cost_n))
 
-cost_list_j = []
-# Optimized Network
+    if cost_n < 0.3:
+        last_i_n = i
+        print("Cost after iteration {}: {}".format(i, cost_n))
+        break
+    else:
+        continue
+
+t1 = time.clock() - t0
+print("Time elapsed for conventional backprop: ", t1)
+
+# Optimized Backprop
+t2 = time.clock()
+
 for i in range(epochs):
     Z1j = np.dot(W1j, X) + b1j
     A1j = np.maximum(0, Z1j)
@@ -220,13 +236,35 @@ for i in range(epochs):
     if i % 100 == 0 or i == epochs - 1:
         print("Cost after iteration {}: {}".format(i, cost_j))
 
-plt.figure()
-plt.subplot(211)
-plt.plot(list(range(epochs)), cost_list_j, color='red')
-plt.ylim(bottom=0.1, top=0.7)
-plt.xlim(left=0, right=epochs)
-plt.subplot(212)
-plt.plot(list(range(epochs)), cost_list_n, color='blue')
-plt.ylim(bottom=0.1, top=0.7)
-plt.xlim(left=0, right=epochs)
+    if cost_j < 0.3:
+        last_i_j = i
+        print("Cost after iteration {}: {}".format(i, cost_j))
+        break
+    else:
+        continue
+
+t3 = time.clock() - t2
+print("Time elapsed for optimized backprop: ", t3)
+
+# Plot cost functions
+plt.figure(figsize=(10, 10))
+plt.suptitle('Conventional Backprop', fontsize=25)
+plt.title(f"Time elapsed: {t1: .2f} seconds \n Number of epochs: {last_i_n}", fontsize=15)
+plt.plot(list(range(last_i_n + 1)), cost_list_n, color='blue')
+plt.ylim(bottom=0.3, top=0.7)
+plt.xlim(left=0, right=last_i_n + 5)
+plt.xlabel("Epochs", fontsize=15)
+plt.ylabel("Cost", fontsize=15)
+plt.show()
+
+print()
+
+plt.figure(figsize=(10, 10))
+plt.suptitle('Optimized Backprop', fontsize=25)
+plt.title(f"Time elapsed: {t3:.2f} seconds \n Number of epochs: {last_i_j}", fontsize=15)
+plt.plot(list(range(last_i_j + 1)), cost_list_j, color='red')
+plt.ylim(bottom=0.3, top=0.7)
+plt.xlim(left=0, right=last_i_n + 5)
+plt.xlabel("Epochs", fontsize=15)
+plt.ylabel("Cost", fontsize=15)
 plt.show()
