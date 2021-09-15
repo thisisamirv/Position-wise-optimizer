@@ -128,7 +128,7 @@ for i in range(epochs):
     if i % 100 == 0 or i == epochs - 1:
         print("Cost after iteration {}: {}".format(i, cost_n))
 
-    if cost_n < 0.3:
+    if cost_n < 0.1:
         last_i_n = i
         print("Cost after iteration {}: {}".format(i, cost_n))
         break
@@ -182,18 +182,12 @@ for i in range(epochs):
     A4j = 1 / (1 + np.exp(-Z4j))
 
     dZ4j = A4j - Y
-    dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
-    db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
     dA3j = np.dot(W4j.T, dZ4j)
     dZ3j = np.array(dA3j, copy=True)
     dZ3j[Z3j <= 0] = 0
-    dW3j = np.dot(dZ3j, A2j.T) * (1. / A2j.shape[1])
-    db3j = np.sum(dZ3j, axis=1, keepdims=True) * (1. / A2j.shape[1])
     dA2j = np.dot(W3j.T, dZ3j)
     dZ2j = np.array(dA2j, copy=True)
     dZ2j[Z2j <= 0] = 0
-    dW2j = np.dot(dZ2j, A1j.T) * (1. / A1j.shape[1])
-    db2j = np.sum(dZ2j, axis=1, keepdims=True) * (1. / A1j.shape[1])
     dA1j = np.dot(W2j.T, dZ2j)
     dZ1j = np.array(dA1j, copy=True)
     dZ1j[Z1j <= 0] = 0
@@ -212,18 +206,12 @@ for i in range(epochs):
     A4j = 1 / (1 + np.exp(-Z4j))
 
     dZ4j = A4j - Y
-    dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
-    db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
     dA3j = np.dot(W4j.T, dZ4j)
     dZ3j = np.array(dA3j, copy=True)
     dZ3j[Z3j <= 0] = 0
-    dW3j = np.dot(dZ3j, A2j.T) * (1. / A2j.shape[1])
-    db3j = np.sum(dZ3j, axis=1, keepdims=True) * (1. / A2j.shape[1])
     dA2j = np.dot(W3j.T, dZ3j)
     dZ2j = np.array(dA2j, copy=True)
     dZ2j[Z2j <= 0] = 0
-    dW2j = np.dot(dZ2j, A1j.T) * (1. / A1j.shape[1])
-    db2j = np.sum(dZ2j, axis=1, keepdims=True) * (1. / A1j.shape[1])
     dA1j = np.dot(W2j.T, dZ2j)
     dZ1j = np.array(dA1j, copy=True)
     dZ1j[Z1j <= 0] = 0
@@ -242,18 +230,12 @@ for i in range(epochs):
     A4j = 1 / (1 + np.exp(-Z4j))
 
     dZ4j = A4j - Y
-    dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
-    db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
     dA3j = np.dot(W4j.T, dZ4j)
     dZ3j = np.array(dA3j, copy=True)
     dZ3j[Z3j <= 0] = 0
-    dW3j = np.dot(dZ3j, A2j.T) * (1. / A2j.shape[1])
-    db3j = np.sum(dZ3j, axis=1, keepdims=True) * (1. / A2j.shape[1])
     dA2j = np.dot(W3j.T, dZ3j)
     dZ2j = np.array(dA2j, copy=True)
     dZ2j[Z2j <= 0] = 0
-    dW2j = np.dot(dZ2j, A1j.T) * (1. / A1j.shape[1])
-    db2j = np.sum(dZ2j, axis=1, keepdims=True) * (1. / A1j.shape[1])
     dA1j = np.dot(W2j.T, dZ2j)
     dZ1j = np.array(dA1j, copy=True)
     dZ1j[Z1j <= 0] = 0
@@ -272,13 +254,35 @@ for i in range(epochs):
     A4j = 1 / (1 + np.exp(-Z4j))
 
     dZ4j = A4j - Y
-    dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
-    db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
     dA3j = np.dot(W4j.T, dZ4j)
     dZ3j = np.array(dA3j, copy=True)
     dZ3j[Z3j <= 0] = 0
-    dW3j = np.dot(dZ3j, A2j.T) * (1. / A2j.shape[1])
-    db3j = np.sum(dZ3j, axis=1, keepdims=True) * (1. / A2j.shape[1])
+    dA2j = np.dot(W3j.T, dZ3j)
+    dZ2j = np.array(dA2j, copy=True)
+    dZ2j[Z2j <= 0] = 0
+    dA1j = np.dot(W2j.T, dZ2j)
+    dZ1j = np.array(dA1j, copy=True)
+    dZ1j[Z1j <= 0] = 0
+    dW1j = np.dot(dZ1j, X.T) * (1. / X.shape[1])
+    db1j = np.sum(dZ1j, axis=1, keepdims=True) * (1. / X.shape[1])
+    W1j = W1j - learning_rate * dW1j
+    b1j = b1j - learning_rate * db1j
+    W2j = W2j - learning_rate * dW2j
+    b2j = b2j - learning_rate * db2j
+
+    Z1j = np.dot(W1j, X) + b1j
+    A1j = np.maximum(0, Z1j)
+    Z2j = np.dot(W2j, A1j) + b2j
+    A2j = np.maximum(0, Z2j)
+    Z3j = np.dot(W3j, A2j) + b3j
+    A3j = np.maximum(0, Z3j)
+    Z4j = np.dot(W4j, A3j) + b4j
+    A4j = 1 / (1 + np.exp(-Z4j))
+
+    dZ4j = A4j - Y
+    dA3j = np.dot(W4j.T, dZ4j)
+    dZ3j = np.array(dA3j, copy=True)
+    dZ3j[Z3j <= 0] = 0
     dA2j = np.dot(W3j.T, dZ3j)
     dZ2j = np.array(dA2j, copy=True)
     dZ2j[Z2j <= 0] = 0
@@ -304,13 +308,9 @@ for i in range(epochs):
     A4j = 1 / (1 + np.exp(-Z4j))
 
     dZ4j = A4j - Y
-    dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
-    db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
     dA3j = np.dot(W4j.T, dZ4j)
     dZ3j = np.array(dA3j, copy=True)
     dZ3j[Z3j <= 0] = 0
-    dW3j = np.dot(dZ3j, A2j.T) * (1. / A2j.shape[1])
-    db3j = np.sum(dZ3j, axis=1, keepdims=True) * (1. / A2j.shape[1])
     dA2j = np.dot(W3j.T, dZ3j)
     dZ2j = np.array(dA2j, copy=True)
     dZ2j[Z2j <= 0] = 0
@@ -336,13 +336,9 @@ for i in range(epochs):
     A4j = 1 / (1 + np.exp(-Z4j))
 
     dZ4j = A4j - Y
-    dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
-    db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
     dA3j = np.dot(W4j.T, dZ4j)
     dZ3j = np.array(dA3j, copy=True)
     dZ3j[Z3j <= 0] = 0
-    dW3j = np.dot(dZ3j, A2j.T) * (1. / A2j.shape[1])
-    db3j = np.sum(dZ3j, axis=1, keepdims=True) * (1. / A2j.shape[1])
     dA2j = np.dot(W3j.T, dZ3j)
     dZ2j = np.array(dA2j, copy=True)
     dZ2j[Z2j <= 0] = 0
@@ -357,6 +353,8 @@ for i in range(epochs):
     b1j = b1j - learning_rate * db1j
     W2j = W2j - learning_rate * dW2j
     b2j = b2j - learning_rate * db2j
+    W3j = W3j - learning_rate * dW3j
+    b3j = b3j - learning_rate * db3j
 
     Z1j = np.dot(W1j, X) + b1j
     A1j = np.maximum(0, Z1j)
@@ -368,8 +366,6 @@ for i in range(epochs):
     A4j = 1 / (1 + np.exp(-Z4j))
 
     dZ4j = A4j - Y
-    dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
-    db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
     dA3j = np.dot(W4j.T, dZ4j)
     dZ3j = np.array(dA3j, copy=True)
     dZ3j[Z3j <= 0] = 0
@@ -402,8 +398,6 @@ for i in range(epochs):
     A4j = 1 / (1 + np.exp(-Z4j))
 
     dZ4j = A4j - Y
-    dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
-    db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
     dA3j = np.dot(W4j.T, dZ4j)
     dZ3j = np.array(dA3j, copy=True)
     dZ3j[Z3j <= 0] = 0
@@ -436,42 +430,6 @@ for i in range(epochs):
     A4j = 1 / (1 + np.exp(-Z4j))
 
     dZ4j = A4j - Y
-    dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
-    db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
-    dA3j = np.dot(W4j.T, dZ4j)
-    dZ3j = np.array(dA3j, copy=True)
-    dZ3j[Z3j <= 0] = 0
-    dW3j = np.dot(dZ3j, A2j.T) * (1. / A2j.shape[1])
-    db3j = np.sum(dZ3j, axis=1, keepdims=True) * (1. / A2j.shape[1])
-    dA2j = np.dot(W3j.T, dZ3j)
-    dZ2j = np.array(dA2j, copy=True)
-    dZ2j[Z2j <= 0] = 0
-    dW2j = np.dot(dZ2j, A1j.T) * (1. / A1j.shape[1])
-    db2j = np.sum(dZ2j, axis=1, keepdims=True) * (1. / A1j.shape[1])
-    dA1j = np.dot(W2j.T, dZ2j)
-    dZ1j = np.array(dA1j, copy=True)
-    dZ1j[Z1j <= 0] = 0
-    dW1j = np.dot(dZ1j, X.T) * (1. / X.shape[1])
-    db1j = np.sum(dZ1j, axis=1, keepdims=True) * (1. / X.shape[1])
-    W1j = W1j - learning_rate * dW1j
-    b1j = b1j - learning_rate * db1j
-    W2j = W2j - learning_rate * dW2j
-    b2j = b2j - learning_rate * db2j
-    W3j = W3j - learning_rate * dW3j
-    b3j = b3j - learning_rate * db3j
-
-    Z1j = np.dot(W1j, X) + b1j
-    A1j = np.maximum(0, Z1j)
-    Z2j = np.dot(W2j, A1j) + b2j
-    A2j = np.maximum(0, Z2j)
-    Z3j = np.dot(W3j, A2j) + b3j
-    A3j = np.maximum(0, Z3j)
-    Z4j = np.dot(W4j, A3j) + b4j
-    A4j = 1 / (1 + np.exp(-Z4j))
-
-    dZ4j = A4j - Y
-    dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
-    db4j = np.sum(dZ4j, axis=1, keepdims=True) * (1. / A3j.shape[1])
     dA3j = np.dot(W4j.T, dZ4j)
     dZ3j = np.array(dA3j, copy=True)
     dZ3j[Z3j <= 0] = 0
@@ -503,7 +461,7 @@ for i in range(epochs):
     if i % 100 == 0 or i == epochs - 1:
         print("Cost after iteration {}: {}".format(i, cost_j))
 
-    if cost_j < 0.3:
+    if cost_j < 0.1:
         last_i_j = i
         print("Cost after iteration {}: {}".format(i, cost_j))
         break
