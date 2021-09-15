@@ -78,7 +78,7 @@ cost_list_n = []
 cost_list_j = []
 
 # Conventional Backprop
-t0 = time.clock()
+t0 = time.process_time()
 
 for i in range(epochs):
     Z1n = np.dot(W1n, X) + b1n
@@ -135,11 +135,11 @@ for i in range(epochs):
     else:
         continue
 
-t1 = time.clock() - t0
+t1 = time.process_time() - t0
 print("Time elapsed for conventional backprop: ", t1)
 
 # Optimized Backprop
-t2 = time.clock()
+t2 = time.process_time()
 
 for i in range(epochs):
     Z1j = np.dot(W1j, X) + b1j
@@ -243,7 +243,7 @@ for i in range(epochs):
     else:
         continue
 
-t3 = time.clock() - t2
+t3 = time.process_time() - t2
 print("Time elapsed for optimized backprop: ", t3)
 
 # Plot cost functions
