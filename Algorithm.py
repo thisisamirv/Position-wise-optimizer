@@ -56,6 +56,8 @@ b3 = np.zeros((layer_dims[3], 1))
 W4 = np.random.randn(layer_dims[4], layer_dims[3]) / np.sqrt(layer_dims[3])
 b4 = np.zeros((layer_dims[4], 1))
 
+print(W1.shape)
+
 W1n = np.copy(W1)
 W2n = np.copy(W2)
 W3n = np.copy(W3)
