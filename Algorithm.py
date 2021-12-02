@@ -9,41 +9,27 @@ L = len(layer_dims)
 learning_rate = 0.0075
 epochs = 1500
 
-train_dataset = h5py.File('datasets/train_catvnoncat.h5', "r")
+train_dataset = h5py.File('train_catvnoncat.h5', "r")
 train_x = np.array(train_dataset["train_set_x"][:])
 train_y = np.array(train_dataset["train_set_y"][:])
-test_dataset = h5py.File('datasets/test_catvnoncat.h5', "r")
-test_x = np.array(test_dataset["test_set_x"][:])
-test_y = np.array(test_dataset["test_set_y"][:])
-classes = np.array(test_dataset["list_classes"][:])
 train_y = train_y.reshape((1, train_y.shape[0]))
-test_y = test_y.reshape((1, test_y.shape[0]))
 
 m_train = train_x.shape[0]
 num_px = train_x.shape[1]
-num_px_test = test_x.shape[1]
-m_test = test_x.shape[0]
 m_train_y = train_y.shape[1]
-m_test_y = test_y.shape[1]
 
 print("Number of training examples: " + str(m_train))
-print("Number of testing examples: " + str(m_test))
 print("Each image is of size: (" + str(num_px) + ", " + str(num_px) + ", 3)")
 print("train_x shape before reshape: " + str(train_x.shape))
 print("train_y shape: " + str(train_y.shape))
-print("test_x shape before reshape: " + str(test_x.shape))
-print("test_y shape: " + str(test_y.shape))
 
 train_x_flatten = train_x.reshape(train_x.shape[0], -1).T
-test_x_flatten = test_x.reshape(test_x.shape[0], -1).T
 train_x = train_x_flatten / 255.
-test_x = test_x_flatten / 255.
 
 X = train_x
 Y = train_y
 
 print("train_x's shape: " + str(train_x.shape))
-print("test_x's shape: " + str(test_x.shape))
 print("layers dimensions: " + str(L))
 
 # Initialize parameters
@@ -128,17 +114,18 @@ for i in range(epochs):
     cost_list_n.append(cost_n)
 
     if i % 100 == 0 or i == epochs - 1:
-        print("Cost after iteration {}: {}".format(i, cost_n))
+        print("Cost for conventional backprop after iteration {}: {}".format(i, cost_n))
 
     if cost_n < 0.3:
         last_i_n = i
-        print("Cost after iteration {}: {}".format(i, cost_n))
+        print("Cost for conventional backprop after iteration {}: {}".format(i, cost_n))
         break
     else:
         continue
 
 t1 = time.process_time() - t0
 print("Time elapsed for conventional backprop: ", t1)
+print()
 
 # Optimized Backprop
 t2 = time.process_time()
@@ -236,17 +223,18 @@ for i in range(epochs):
     cost_list_j.append(cost_j)
 
     if i % 100 == 0 or i == epochs - 1:
-        print("Cost after iteration {}: {}".format(i, cost_j))
+        print("Cost for optimized backprop after iteration {}: {}".format(i, cost_j))
 
     if cost_j < 0.3:
         last_i_j = i
-        print("Cost after iteration {}: {}".format(i, cost_j))
+        print("Cost for optimized backprop after iteration {}: {}".format(i, cost_j))
         break
     else:
         continue
 
 t3 = time.process_time() - t2
 print("Time elapsed for optimized backprop: ", t3)
+print()
 
 # Plot cost functions
 plt.figure(figsize=(10, 10))
