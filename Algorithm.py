@@ -1,15 +1,20 @@
-# Import packages, import and reshape data, and start and check some values
+#!/usr/local/bin/python3
+
+# Import packages
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
 import time
 
+# Model parameters
 layer_dims = [12288, 20, 7, 5, 1]
 L = len(layer_dims)
 learning_rate = 0.0075
 epochs = 1500
+cost_lim = 0.3
 
-train_dataset = h5py.File('train_catvnoncat.h5', "r")
+# Cat classification data
+train_dataset = h5py.File('CatClassification.h5', "r")
 train_x = np.array(train_dataset["train_set_x"][:])
 train_y = np.array(train_dataset["train_set_y"][:])
 train_y = train_y.reshape((1, train_y.shape[0]))
@@ -18,17 +23,17 @@ m_train = train_x.shape[0]
 num_px = train_x.shape[1]
 m_train_y = train_y.shape[1]
 
+train_x_flatten = train_x.reshape(train_x.shape[0], -1).T
+train_x_new = train_x_flatten / 255.
+
+X = train_x_new
+Y = train_y
+
+# Print dataset info
 print("Number of training examples: " + str(m_train))
 print("Each image is of size: (" + str(num_px) + ", " + str(num_px) + ", 3)")
 print("train_x shape before reshape: " + str(train_x.shape))
 print("train_y shape: " + str(train_y.shape))
-
-train_x_flatten = train_x.reshape(train_x.shape[0], -1).T
-train_x = train_x_flatten / 255.
-
-X = train_x
-Y = train_y
-
 print("train_x's shape: " + str(train_x.shape))
 print("layers dimensions: " + str(L))
 print()
@@ -115,7 +120,7 @@ for i in range(epochs):
     if i % 100 == 0 or i == epochs - 1:
         print("Cost for conventional backprop after iteration {}: {}".format(i, cost_n))
 
-    if cost_n < 0.3:
+    if cost_n < cost_lim:
         last_i_n = i
         print("Cost for conventional backprop after iteration {}: {}".format(i, cost_n))
         break
@@ -224,7 +229,7 @@ for i in range(epochs):
     if i % 100 == 0 or i == epochs - 1:
         print("Cost for optimized backprop after iteration {}: {}".format(i, cost_j))
 
-    if cost_j < 0.3:
+    if cost_j < cost_lim:
         last_i_j = i
         print("Cost for optimized backprop after iteration {}: {}".format(i, cost_j))
         break
