@@ -17,6 +17,8 @@ train_x_flatten = train_x_temp.reshape(train_x_temp.shape[0], -1).T
 train_x = train_x_flatten / 255.
 X = train_x
 Y = train_y
+out_dim = 1
+data = 1
 
 cost_lim_up = 0.7
 cost_lim_down = 0.3
@@ -30,22 +32,41 @@ train_x_temp, train_y_temp = mndata.load_training()
 train_x_temp = np.array(train_x_temp)
 train_y_temp = np.array(train_y_temp)
 train_x = train_x_temp.T
-train_y = train_y_temp[:, np.newaxis]
-train_y = train_y.T
+one_hot = np.zeros((train_y_temp.size, 10))
+one_hot[np.arange(train_y_temp.size),train_y_temp] = 1
+train_y = one_hot.T
 m = train_x.shape[1]
 X = train_x
 Y = train_y
+out_dim = 10
+data = 2
 
-cost_lim_up = 0.7
-cost_lim_down = 0.3
-print_num = 1
+cost_lim_up = 3.2496
+cost_lim_down = 3.2494
+print_num = 150
 
 # Model parameters
-layer_dims = [train_x.shape[0], 20, 7, 5, 1]
+layer_dims = [train_x.shape[0], 20, 7, 5, out_dim]
 L = len(layer_dims)
 learning_rate = 0.0075
 epochs = 1500
 epsilon = 1e-5
+
+def cost_function(Y, A4, m, epsilon):
+    cost_n = (-1 / m) * np.sum(np.multiply(Y, np.log(A4 + epsilon)) + np.multiply(1 - Y, np.log(1 - A4 + epsilon)))
+    return cost_n
+
+# Classification layer
+if data == 2:
+    def class_layer(Z4):
+        Z4_exp = np.exp(Z4)
+        Z4_sum = np.sum(Z4_exp, axis = 0, keepdims = True)
+        A4 = np.divide(Z4_exp, Z4_sum)
+        return A4
+else:
+    def class_layer(Z4):
+        A4 = 1 / (1 + np.exp(-Z4))
+        return A4
 
 # Print dataset info
 print("Number of training examples: " + str(m))
@@ -55,7 +76,7 @@ print("layers dimensions: " + str(L))
 print()
 
 # Initialize parameters
-#np.random.seed(0)
+np.random.seed(0)
 W1 = np.random.randn(layer_dims[1], layer_dims[0]) / np.sqrt(layer_dims[0])
 b1 = np.zeros((layer_dims[1], 1))
 W2 = np.random.randn(layer_dims[2], layer_dims[1]) / np.sqrt(layer_dims[1])
@@ -97,7 +118,7 @@ for i in range(epochs):
     Z3n = np.dot(W3n, A2n) + b3n
     A3n = np.maximum(0, Z3n)
     Z4n = np.dot(W4n, A3n) + b4n
-    A4n = 1 / (1 + np.exp(-Z4n))
+    A4n = class_layer(Z4n)
 
     dZ4n = A4n - Y
     dW4n = np.dot(dZ4n, A3n.T) * (1. / A3n.shape[1])
@@ -130,7 +151,7 @@ for i in range(epochs):
     W4n = W4n - learning_rate * dW4n
     b4n = b4n - learning_rate * db4n
 
-    cost_n = (-1 / m) * np.sum(np.multiply(Y, np.log(A4n + epsilon)) + np.multiply(1 - Y, np.log(1 - A4n + epsilon)))
+    cost_n = cost_function(Y, A4n, m, epsilon)
     cost_n = np.squeeze(cost_n)
     cost_list_n.append(cost_n)
 
@@ -159,7 +180,7 @@ for i in range(epochs):
     Z3j = np.dot(W3j, A2j) + b3j
     A3j = np.maximum(0, Z3j)
     Z4j = np.dot(W4j, A3j) + b4j
-    A4j = 1 / (1 + np.exp(-Z4j))
+    A4j = class_layer(Z4j)
 
     dZ4j = A4j - Y
     dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
@@ -167,7 +188,7 @@ for i in range(epochs):
     W4j = W4j - learning_rate * dW4j
     b4j = b4j - learning_rate * db4j
     Z4j = np.dot(W4j, A3j) + b4j
-    A4j = 1 / (1 + np.exp(-Z4j))
+    A4j = class_layer(Z4j)
 
     dZ4j = A4j - Y
     dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
@@ -184,7 +205,7 @@ for i in range(epochs):
     Z3j = np.dot(W3j, A2j) + b3j
     A3j = np.maximum(0, Z3j)
     Z4j = np.dot(W4j, A3j) + b4j
-    A4j = 1 / (1 + np.exp(-Z4j))
+    A4j = class_layer(Z4j)
 
     dZ4j = A4j - Y
     dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
@@ -210,7 +231,7 @@ for i in range(epochs):
     Z3j = np.dot(W3j, A2j) + b3j
     A3j = np.maximum(0, Z3j)
     Z4j = np.dot(W4j, A3j) + b4j
-    A4j = 1 / (1 + np.exp(-Z4j))
+    A4j = class_layer(Z4j)
 
     dZ4j = A4j - Y
     dW4j = np.dot(dZ4j, A3j.T) * (1. / A3j.shape[1])
@@ -239,7 +260,7 @@ for i in range(epochs):
     W4j = W4j - learning_rate * dW4j
     b4j = b4j - learning_rate * db4j
 
-    cost_j = (-1 / m) * np.sum(np.multiply(Y, np.log(A4j + epsilon)) + np.multiply(1 - Y, np.log(1 - A4j + epsilon)))
+    cost_j = cost_function(Y, A4j, m, epsilon)
     cost_j = np.squeeze(cost_j)
     cost_list_j.append(cost_j)
 
@@ -260,7 +281,7 @@ print()
 # Plot cost functions
 plt.figure(figsize=(10, 10))
 plt.suptitle('Conventional Backprop', fontsize=25)
-plt.title(f"Time elapsed: {t1: .2f} seconds \n Number of epochs: {last_i_n}", fontsize=15)
+plt.title(f"Time elapsed: {t1: .0f} seconds \n Number of epochs: {last_i_n}", fontsize=15)
 plt.plot(list(range(last_i_n + 1)), cost_list_n, color='blue')
 plt.ylim(bottom=cost_lim_down, top=cost_lim_up)
 plt.xlim(left=0, right=last_i_n + 5)
@@ -272,7 +293,7 @@ print()
 
 plt.figure(figsize=(10, 10))
 plt.suptitle('Optimized Backprop', fontsize=25)
-plt.title(f"Time elapsed: {t3:.2f} seconds \n Number of epochs: {last_i_j}", fontsize=15)
+plt.title(f"Time elapsed: {t3:.0f} seconds \n Number of epochs: {last_i_j}", fontsize=15)
 plt.plot(list(range(last_i_j + 1)), cost_list_j, color='red')
 plt.ylim(bottom=cost_lim_down, top=cost_lim_up)
 plt.xlim(left=0, right=last_i_n + 5)
