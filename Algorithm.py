@@ -31,7 +31,7 @@ import requests
 import gzip
 import hashlib
 
-path = ''
+path = 'MNIST'
 def fetch(url):
     fp = os.path.join(path, hashlib.md5(url.encode('utf-8')).hexdigest())
     if os.path.isfile(fp):
