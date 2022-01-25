@@ -9,11 +9,11 @@ import time
 """
 import h5py
 train_dataset = h5py.File('CatClassification.h5', "r")
-train_x_temp = np.array(train_dataset["train_set_x"][:])
+train_x = np.array(train_dataset["train_set_x"][:])
 train_y = np.array(train_dataset["train_set_y"][:])
 train_y = train_y.reshape((1, train_y.shape[0]))
-m = train_x_temp.shape[0]
-train_x_flatten = train_x_temp.reshape(train_x_temp.shape[0], -1).T
+m = train_x.shape[0]
+train_x_flatten = train_x.reshape(train_x.shape[0], -1).T
 train_x = train_x_flatten / 255.
 X = train_x
 Y = train_y
@@ -21,20 +21,37 @@ out_dim = 1
 data = 1
 
 cost_lim_up = 0.7
-cost_lim_down = 0.3
+cost_lim_down = 0.1
 print_num = 100
 """
 
 # MNIST dataset
-from mnist import MNIST
-mndata = MNIST('/Users/av/Git/DNN-Backprop/MNIST')
-train_x_temp, train_y_temp = mndata.load_training()
-train_x_temp = np.array(train_x_temp)
-train_y_temp = np.array(train_y_temp)
-train_x = train_x_temp.T
-one_hot = np.zeros((train_y_temp.size, 10))
-one_hot[np.arange(train_y_temp.size),train_y_temp] = 1
-train_y = one_hot.T
+import os
+import requests
+import gzip
+import hashlib
+
+path = ''
+def fetch(url):
+    fp = os.path.join(path, hashlib.md5(url.encode('utf-8')).hexdigest())
+    if os.path.isfile(fp):
+        with open(fp, "rb") as f:
+            data = f.read()
+    else:
+        with open(fp, "wb") as f:
+            data = requests.get(url).content
+            f.write(data)
+    return np.frombuffer(gzip.decompress(data), dtype=np.uint8).copy()
+
+X = fetch("http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz")[0x10:].reshape((-1, 28, 28))
+Y = fetch("http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz")[8:]
+train_x = np.copy(X)
+train_y = np.copy(Y)
+train_y = train_y.reshape(-1)
+train_y = (np.eye(10)[train_y]).T
+train_x = train_x.reshape(train_x.shape[0], -1).T
+train_y = train_y.astype(np.float32)
+train_x = train_x.astype(np.float32)
 m = train_x.shape[1]
 X = train_x
 Y = train_y
@@ -49,7 +66,7 @@ print_num = 150
 layer_dims = [train_x.shape[0], 20, 7, 5, out_dim]
 L = len(layer_dims)
 learning_rate = 0.0075
-epochs = 1500
+epochs = 15000
 epsilon = 1e-5
 
 def cost_function(Y, A4, m, epsilon):
@@ -76,7 +93,7 @@ print("layers dimensions: " + str(L))
 print()
 
 # Initialize parameters
-np.random.seed(0)
+np.random.seed(1)
 W1 = np.random.randn(layer_dims[1], layer_dims[0]) / np.sqrt(layer_dims[0])
 b1 = np.zeros((layer_dims[1], 1))
 W2 = np.random.randn(layer_dims[2], layer_dims[1]) / np.sqrt(layer_dims[1])
