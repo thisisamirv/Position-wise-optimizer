@@ -26,6 +26,7 @@ print_num = 100
 """
 
 # MNIST dataset
+"""
 import os
 import requests
 import gzip
@@ -61,9 +62,54 @@ data = 2
 cost_lim_up = 3.2496
 cost_lim_down = 3.2494
 print_num = 150
+"""
+
+# CIFAR-10 dataset
+import os
+import tarfile
+from urllib.request import urlretrieve
+
+path = 'CIFAR-10'
+url = 'https://www.cs.toronto.edu/~kriz/'
+tar = 'cifar-10-binary.tar.gz'
+files = ['cifar-10-batches-bin/data_batch_1.bin',
+         'cifar-10-batches-bin/data_batch_2.bin',
+         'cifar-10-batches-bin/data_batch_3.bin',
+         'cifar-10-batches-bin/data_batch_4.bin',
+         'cifar-10-batches-bin/data_batch_5.bin',
+         'cifar-10-batches-bin/test_batch.bin']
+os.makedirs(path, exist_ok=True)
+if tar not in os.listdir(path):
+    urlretrieve(''.join((url, tar)), os.path.join(path, tar))
+with tarfile.open(os.path.join(path, tar)) as tar_object:
+    fsize = 10000 * (32 * 32 * 3) + 10000
+    buffr = np.zeros(fsize * 6, dtype='uint8')
+    members = [file for file in tar_object if file.name in files]
+    members.sort(key=lambda member: member.name)
+    for i, member in enumerate(members):
+        f = tar_object.extractfile(member)
+        buffr[i * fsize:(i + 1) * fsize] = np.frombuffer(f.read(), 'B')
+labels = buffr[::3073]
+pixels = np.delete(buffr, np.arange(0, buffr.size, 3073))
+images = pixels.reshape(-1, 3072).astype('float32') / 255
+train_images, test_images = images[:50000], images[50000:]
+train_labels, test_labels = labels[:50000], labels[50000:]
+n_rows = len(train_labels)
+n_cols = train_labels.max() + 1
+train_y = np.zeros((n_rows, n_cols), dtype='uint8')
+train_y[np.arange(n_rows), train_labels] = 1
+X = train_images.T
+Y = train_y.T
+m = X.shape[1]
+out_dim = 10
+data = 3
+
+cost_lim_up = 3.2560
+cost_lim_down = 3.230
+print_num = 20
 
 # Model parameters
-layer_dims = [train_x.shape[0], 20, 7, 5, out_dim]
+layer_dims = [X.shape[0], 20, 7, 5, out_dim]
 L = len(layer_dims)
 learning_rate = 0.0075
 epochs = 15000
@@ -74,15 +120,15 @@ def cost_function(Y, A4, m, epsilon):
     return cost_n
 
 # Classification layer
-if data == 2:
+if data == 1:
+    def class_layer(Z4):
+        A4 = 1 / (1 + np.exp(-Z4))
+        return A4
+else:
     def class_layer(Z4):
         Z4_exp = np.exp(Z4)
         Z4_sum = np.sum(Z4_exp, axis = 0, keepdims = True)
         A4 = np.divide(Z4_exp, Z4_sum)
-        return A4
-else:
-    def class_layer(Z4):
-        A4 = 1 / (1 + np.exp(-Z4))
         return A4
 
 # Print dataset info

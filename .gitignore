@@ -115,3 +115,4 @@ dmypy.json
 
 # Ignore datasets
 /MNIST/
+/CIFAR-10/
