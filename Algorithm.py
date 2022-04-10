@@ -19,8 +19,7 @@ if data == "1":
     X_flatten = X.reshape(X.shape[0], -1).T
     X = X_flatten / 255.
     out_dim = 1
-    cost_lim_up = 0.7
-    cost_lim_down = 0.1
+    cost_lim = 0.1
     learning_rate = 0.0075
     print_num = 100
 elif data == "2":
@@ -61,8 +60,7 @@ elif data == "2":
     Y = Y.T
     N = X.shape[1]
     out_dim = 10
-    cost_lim_up = 3.2560
-    cost_lim_down = 3.230
+    cost_lim = 3.230
     learning_rate = 0.0075
     print_num = 20
 elif data == "3":
@@ -92,8 +90,7 @@ elif data == "3":
     X = X.astype(np.float32)
     N = X.shape[1]
     out_dim = 10
-    cost_lim_up = 3.2496
-    cost_lim_down = 3.2494
+    cost_lim = 3.2494
     learning_rate = 0.000075
     print_num = 50
 else:
@@ -212,10 +209,10 @@ for i in range(epochs):
     cost_list_GD.append(cost_GD)
 
     if i % print_num == 0:
-        print(f"Cost for gradient descent optimizer after epoch {i}: {cost_GD: .3f}")
-    elif cost_GD < cost_lim_down or i == epochs - 1:
+        print(f"Cost for gradient descent optimizer after epoch {i}: {cost_GD: .4f}")
+    elif cost_GD < cost_lim or i == epochs - 1:
         last_i_GD = i
-        print(f"Cost for gradient descent optimizer after epoch {i}: {cost_GD: .3f}")
+        print(f"Cost for gradient descent optimizer after epoch {i}: {cost_GD: .4f}")
         break
     else:
         continue
@@ -321,10 +318,10 @@ for i in range(epochs):
     cost_list_PW.append(cost_PW)
 
     if i % print_num == 0:
-        print(f"Cost for position-wise optimizer after epoch {i}: {cost_PW: .3f}")
-    elif cost_PW < cost_lim_down or i == epochs - 1:
+        print(f"Cost for position-wise optimizer after epoch {i}: {cost_PW: .4f}")
+    elif cost_PW < cost_lim or i == epochs - 1:
         last_i_PW = i
-        print(f"Cost for position-wise optimizer after epoch {i}: {cost_PW: .3f}")
+        print(f"Cost for position-wise optimizer after epoch {i}: {cost_PW: .4f}")
         break
     else:
         continue
@@ -339,7 +336,7 @@ plt.figure(figsize=(10, 10))
 plt.suptitle('Gradient Descent Optimizer', fontsize=25)
 plt.title(f"Time elapsed: {t1: .0f} seconds \n Number of epochs: {last_i_GD}", fontsize=15)
 plt.plot(list(range(last_i_GD + 1)), cost_list_GD, color='blue')
-plt.ylim(bottom=cost_lim_down, top=cost_lim_up)
+plt.ylim(bottom=cost_lim)
 plt.xlim(left=0, right=last_i_GD + 5)
 plt.xlabel("Epochs", fontsize=15)
 plt.ylabel("Cost", fontsize=15)
@@ -351,7 +348,7 @@ plt.figure(figsize=(10, 10))
 plt.suptitle('Position-Wise Optimizer', fontsize=25)
 plt.title(f"Time elapsed: {t3: .0f} seconds \n Number of epochs: {last_i_PW}", fontsize=15)
 plt.plot(list(range(last_i_PW + 1)), cost_list_PW, color='red')
-plt.ylim(bottom=cost_lim_down, top=cost_lim_up)
+plt.ylim(bottom=cost_lim)
 plt.xlim(left=0, right=last_i_GD + 5)
 plt.xlabel("Epochs", fontsize=15)
 plt.ylabel("Cost", fontsize=15)
