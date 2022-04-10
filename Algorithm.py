@@ -26,13 +26,13 @@ print_num = 100
 """
 
 # MNIST dataset
-"""
 import os
 import requests
 import gzip
 import hashlib
 
 path = 'MNIST'
+os.makedirs(path, exist_ok=True)
 def fetch(url):
     fp = os.path.join(path, hashlib.md5(url.encode('utf-8')).hexdigest())
     if os.path.isfile(fp):
@@ -43,7 +43,6 @@ def fetch(url):
             data = requests.get(url).content
             f.write(data)
     return np.frombuffer(gzip.decompress(data), dtype=np.uint8).copy()
-
 X = fetch("http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz")[0x10:].reshape((-1, 28, 28))
 Y = fetch("http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz")[8:]
 train_x = np.copy(X)
@@ -62,9 +61,10 @@ data = 2
 cost_lim_up = 3.2496
 cost_lim_down = 3.2494
 print_num = 150
-"""
+
 
 # CIFAR-10 dataset
+"""
 import os
 import tarfile
 from urllib.request import urlretrieve
@@ -107,6 +107,7 @@ data = 3
 cost_lim_up = 3.2560
 cost_lim_down = 3.230
 print_num = 20
+"""
 
 # Model parameters
 layer_dims = [X.shape[0], 20, 7, 5, out_dim]
