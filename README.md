@@ -20,3 +20,7 @@ https://doi.org/10.48550/arXiv.2204.05312
 NOTE: Download Breast Ultrasound Images Dataset from the following link:
 
 https://www.kaggle.com/datasets/aryashah2k/breast-ultrasound-images-dataset
+
+
+## Output example
+![Figure](https://user-images.githubusercontent.com/85622224/168429017-a442d189-ffd8-4cc1-b8de-6664b7d01631.png)
