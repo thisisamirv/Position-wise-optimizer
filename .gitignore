@@ -116,3 +116,4 @@ dmypy.json
 # Ignore datasets
 /MNIST/
 /CIFAR-10/
+/Dataset_BUSI_with_GT/
